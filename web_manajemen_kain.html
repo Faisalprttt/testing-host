@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KainFlow Pro - Warehouse Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .hide-section { display: none !important; }
+        .nav-btn.active { background-color: rgba(255,255,255,0.1); color: white; border-left: 4px solid #fbbf24; }
+        
+        .logo-text {
+            letter-spacing: -0.05em;
+        }
+
+        .filter-chip {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .filter-chip.active {
+            background-color: #1e293b;
+            color: white;
+            border-color: #1e293b;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden text-slate-800">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-72 bg-[#1e293b] text-slate-400 flex flex-col shrink-0 shadow-2xl z-20">
+        <div class="p-8 bg-white mb-2 flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+                <i data-lucide="layers" class="text-white w-6 h-6"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="logo-text font-black text-2xl text-slate-800 leading-none">KAIN<span class="text-blue-600">FLOW</span></span>
+                <span class="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase mt-1">Warehouse Pro</span>
+            </div>
+        </div>
+        
+        <div class="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-[10px] font-black text-slate-200 tracking-[0.2em] uppercase">Gudang Sistem</span>
+            </div>
+            <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded font-bold">V1.5</span>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scroll">
+            <button onclick="navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> 
+                <span class="font-semibold text-sm">Dashboard</span>
+            </button>
+            
+            <div class="pt-6 pb-2 px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Inbound & QC</div>
+            <button onclick="navigate('inbound')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="inbound">
+                <i data-lucide="package-plus" class="w-5 h-5"></i> <span class="text-sm">Penerimaan Kain</span>
+            </button>
+            <button onclick="navigate('qc')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="qc">
+                <i data-lucide="clipboard-check" class="w-5 h-5"></i> <span class="text-sm">Inspeksi Lab/QC</span>
+            </button>
+
+            <div class="pt-6 pb-2 px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Produksi & Outbound</div>
+            <button onclick="navigate('cutting')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="cutting">
+                <i data-lucide="scissors" class="w-5 h-5"></i> <span class="text-sm">Cutting Room</span>
+            </button>
+            <button onclick="navigate('t3')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="t3">
+                <i data-lucide="send" class="w-5 h-5"></i> <span class="text-sm">Transfer T3</span>
+            </button>
+            <button onclick="navigate('sponging')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="sponging">
+                <i data-lucide="waves" class="w-5 h-5"></i> <span class="text-sm">Sponging Process</span>
+            </button>
+            <button onclick="navigate('mto')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="mto">
+                <i data-lucide="test-tube-2" class="w-5 h-5"></i> <span class="text-sm">MTO / Sample</span>
+            </button>
+            <button onclick="navigate('perbaikan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="perbaikan">
+                <i data-lucide="wrench" class="w-5 h-5"></i> <span class="text-sm">Perbaikan Garment</span>
+            </button>
+
+            <div class="pt-6 pb-2 px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Reporting</div>
+            <button onclick="navigate('report')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700/50 hover:text-white transition-all group" data-target="report">
+                <i data-lucide="file-text" class="w-5 h-5"></i> <span class="text-sm">Saldo Stok Akhir</span>
+            </button>
+        </nav>
+        
+        <div class="p-6 border-t border-slate-700/50 bg-slate-900/50">
+            <button onclick="resetData()" class="w-full flex items-center justify-center gap-2 text-[10px] font-bold text-rose-400 hover:text-rose-300 transition-colors uppercase tracking-widest py-2 border border-rose-900/30 rounded-lg">
+                <i data-lucide="trash-2" class="w-3 h-3"></i> Bersihkan Data
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-10">
+            <div class="flex items-center gap-4">
+                <div class="h-10 w-1 bg-blue-600 rounded-full"></div>
+                <h2 id="header-title" class="text-xl font-extrabold text-slate-800 tracking-tight uppercase">Dashboard</h2>
+            </div>
+            <div id="current-date-display" class="text-xs font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 uppercase tracking-widest"></div>
+        </header>
+
+        <div class="flex-1 p-10 overflow-y-auto custom-scroll">
+            <div id="toast" class="fixed top-24 right-10 bg-slate-900 text-white px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-500 translate-x-[150%] z-50 flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+                <span id="toast-msg" class="text-sm font-bold">Berhasil</span>
+            </div>
+
+            <!-- Dashboard Section -->
+            <section id="page-dashboard" class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-blue-50 rounded-lg text-blue-600"><i data-lucide="layers" class="w-5 h-5"></i></div>
+                            <span class="text-[10px] font-black text-slate-300 uppercase">Produksi</span>
+                        </div>
+                        <h3 id="dash-prod" class="text-3xl font-black text-slate-800">0.00</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Meter Tersedia</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600"><i data-lucide="beaker" class="w-5 h-5"></i></div>
+                            <span class="text-[10px] font-black text-slate-300 uppercase">Sample</span>
+                        </div>
+                        <h3 id="dash-sample" class="text-3xl font-black text-slate-800">0.00</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Meter Tersedia</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-amber-400">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-amber-50 rounded-lg text-amber-600"><i data-lucide="timer" class="w-5 h-5"></i></div>
+                            <span class="text-[10px] font-black text-slate-300 uppercase">QC Lab</span>
+                        </div>
+                        <h3 id="dash-qc" class="text-3xl font-black text-amber-600">0</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Menunggu Antrean</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-emerald-600">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600"><i data-lucide="activity" class="w-5 h-5"></i></div>
+                            <span class="text-[10px] font-black text-slate-300 uppercase">Hari Ini</span>
+                        </div>
+                        <h3 id="dash-trx" class="text-3xl font-black">0</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider text-emerald-600">Transaksi Aktif</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-8 border-b border-slate-100 bg-slate-50/30">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div class="space-y-1">
+                                <h3 class="font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+                                    <i data-lucide="search" class="w-4 h-4 text-blue-600"></i> Penelusuran Transaksi
+                                </h3>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Filter berdasarkan kategori atau kata kunci</p>
+                            </div>
+                            <div class="relative w-full md:w-80">
+                                <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="dash-search" oninput="renderDashboard()" placeholder="Cari Job / Artikel / Kode..." class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none font-bold">
+                            </div>
+                        </div>
+
+                        <!-- CATEGORY CHIPS (T2 Removed) -->
+                        <div class="mt-6 flex flex-wrap gap-2" id="filter-chips">
+                            <button onclick="setFilter('ALL')" class="filter-chip active px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="ALL">Semua</button>
+                            <button onclick="setFilter('INBOUND_SUPPLIER')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="INBOUND_SUPPLIER">Kedatangan Barang</button>
+                            <button onclick="setFilter('INBOUND_SAMPLE')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="INBOUND_SAMPLE">Kedatangan Sample</button>
+                            <button onclick="setFilter('CUTTING')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="CUTTING">Pengeluaran Cutting</button>
+                            <button onclick="setFilter('T3')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="T3">Pengiriman T3</button>
+                            <button onclick="setFilter('SPONGING')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="SPONGING">Sponging</button>
+                            <button onclick="setFilter('MTO')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="MTO">Pengeluaran MTO</button>
+                            <button onclick="setFilter('PERBAIKAN')" class="filter-chip px-4 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-wider hover:bg-slate-100" data-filter="PERBAIKAN">Perbaikan Garment</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-500 font-black border-b border-slate-200 uppercase tracking-widest">
+                                <tr>
+                                    <th class="px-8 py-4">Waktu</th>
+                                    <th class="px-8 py-4">Job No</th>
+                                    <th class="px-8 py-4 text-center">Tipe</th>
+                                    <th class="px-8 py-4 text-right">Volume</th>
+                                    <th class="px-8 py-4">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-history" class="divide-y divide-slate-50 font-medium"></tbody>
+                        </table>
+                        <div id="no-results" class="hide-section py-20 text-center">
+                            <i data-lucide="search-x" class="w-12 h-12 text-slate-200 mx-auto mb-4"></i>
+                            <p class="text-slate-300 font-black uppercase text-[10px] tracking-[0.3em]">Data Tidak Ditemukan</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pages -->
+            <section id="page-inbound" class="hide-section max-w-3xl mx-auto"></section>
+            <section id="page-outbound" class="hide-section max-w-3xl mx-auto"></section>
+            <section id="page-qc" class="hide-section"></section>
+            <section id="page-report" class="hide-section"></section>
+        </div>
+    </main>
+
+    <script>
+        const DB_KEY = 'trisco_kainflow_db_v1';
+        let db = JSON.parse(localStorage.getItem(DB_KEY)) || { inventory: [], transactions: [] };
+        let currentFilter = 'ALL';
+
+        function save() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+        function setFilter(f) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-chip').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('data-filter') === f);
+            });
+            renderDashboard();
+        }
+
+        function navigate(page) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hide-section'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`[data-target="${page}"]`);
+            if(btn) btn.classList.add('active');
+
+            const pageMap = {
+                dashboard: { id: 'page-dashboard', render: renderDashboard },
+                inbound: { id: 'page-inbound', render: renderInboundPage },
+                qc: { id: 'page-qc', render: renderQCPage },
+                report: { id: 'page-report', render: renderReportPage }
+            };
+
+            const outboundTypes = ['cutting', 't3', 'sponging', 'mto', 'perbaikan']; // Removed t2
+            if(outboundTypes.includes(page)) {
+                renderOutboundPage(page);
+                document.getElementById('page-outbound').classList.remove('hide-section');
+            } else if(pageMap[page]) {
+                pageMap[page].render();
+                document.getElementById(pageMap[page].id).classList.remove('hide-section');
+            }
+
+            document.getElementById('header-title').textContent = page.replace('_', ' ');
+            refreshIcons();
+        }
+
+        function renderInboundPage() {
+            const container = document.getElementById('page-inbound');
+            const today = new Date().toISOString().split('T')[0];
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="bg-slate-800 p-6 text-white">
+                        <h3 class="text-lg font-black uppercase tracking-tight">Penerimaan Kain</h3>
+                        <p class="text-slate-400 text-[10px] uppercase font-bold mt-1">Registrasi kain masuk (Supplier / Sample)</p>
+                    </div>
+                    <form onsubmit="handleInbound(event)" class="p-8 space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
+                                <input type="date" id="in-date" value="${today}" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-sm">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
+                                <select id="in-type" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-sm">
+                                    <option value="Supplier">Barang Produksi</option>
+                                    <option value="Sample">Barang Sample</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2 space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nama / Kode Artikel Kain</label>
+                                <input type="text" id="in-article" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none uppercase font-black text-sm">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Volume (Qty)</label>
+                                <input type="number" step="0.01" id="in-qty" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-black text-sm">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Satuan</label>
+                                <select id="in-unit" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-sm">
+                                    <option value="Meter">Meter</option><option value="Yard">Yard</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-widest text-xs">Simpan Penerimaan</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderOutboundPage(type) {
+            const container = document.getElementById('page-outbound');
+            const today = new Date().toISOString().split('T')[0];
+            const cfg = {
+                cutting: { icon: 'scissors', label: 'No. Meja', title: 'Cutting Room', dbType: 'CUTTING' },
+                t3: { icon: 'send', label: 'Tujuan', title: 'Transfer T3', dbType: 'T3' },
+                sponging: { icon: 'waves', label: 'ID Mesin', title: 'Sponging Process', dbType: 'SPONGING' },
+                mto: { icon: 'test-tube-2', label: 'Note Sample', title: 'MTO / Sample', dbType: 'MTO' },
+                perbaikan: { icon: 'wrench', label: 'Alasan Perbaikan', title: 'Perbaikan Garment', dbType: 'PERBAIKAN' }
+            }[type];
+
+            const stockArticles = [...new Set(db.inventory.filter(i => i.status === 'GUDANG').map(i => i.article))];
+
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="bg-slate-800 p-6 text-white flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-black uppercase tracking-tight">${cfg.title}</h3>
+                            <p class="text-slate-400 text-[10px] uppercase font-bold mt-1">Transaksi pengeluaran stok aktif</p>
+                        </div>
+                        <i data-lucide="${cfg.icon}" class="w-8 h-8 opacity-20"></i>
+                    </div>
+                    <form onsubmit="handleOutbound(event, '${cfg.dbType}')" class="p-8 space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
+                                <input type="date" id="out-date" value="${today}" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-sm">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Job Number</label>
+                                <input type="text" id="out-job" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none uppercase font-black text-sm">
+                            </div>
+                            <div class="col-span-2 space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pilih Artikel Kain</label>
+                                <input type="text" id="out-article" list="stock-list" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none uppercase font-black text-sm">
+                                <datalist id="stock-list">${stockArticles.map(a => `<option value="${a}">`).join('')}</datalist>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Qty Keluar</label>
+                                <input type="number" step="0.01" id="out-qty" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-black text-sm">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${cfg.label}</label>
+                                <input type="text" id="out-meta" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-sm">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-lg hover:bg-slate-900 transition-all uppercase tracking-widest text-xs">Konfirmasi Transaksi</button>
+                    </form>
+                </div>
+            `;
+            refreshIcons();
+        }
+
+        function handleInbound(e) {
+            e.preventDefault();
+            const typeVal = document.getElementById('in-type').value;
+            const item = {
+                id: 'TRX-' + Date.now(),
+                dateIn: document.getElementById('in-date').value,
+                type: typeVal,
+                article: document.getElementById('in-article').value.toUpperCase(),
+                qtyInitial: parseFloat(document.getElementById('in-qty').value),
+                qtyOutTotal: 0,
+                unit: document.getElementById('in-unit').value,
+                status: 'PENDING_QC'
+            };
+            db.inventory.push(item);
+            db.transactions.push({
+                timestamp: new Date().toISOString(),
+                date: item.dateIn,
+                type: typeVal === 'Supplier' ? 'INBOUND_SUPPLIER' : 'INBOUND_SAMPLE',
+                jobRef: '-',
+                article: item.article,
+                qty: item.qtyInitial,
+                unit: item.unit,
+                note: `Kedatangan ${typeVal}`
+            });
+            save();
+            showToast('Barang dicatat & Menunggu QC');
+            navigate('dashboard');
+        }
+
+        function handleOutbound(e, type) {
+            e.preventDefault();
+            const article = document.getElementById('out-article').value.toUpperCase();
+            const qty = parseFloat(document.getElementById('out-qty').value);
+            const job = document.getElementById('out-job').value.toUpperCase();
+            const meta = document.getElementById('out-meta').value;
+
+            let stockItems = db.inventory.filter(i => i.article === article && i.status === 'GUDANG');
+            let totalAvailable = stockItems.reduce((acc, i) => acc + (i.qtyInitial - i.qtyOutTotal), 0);
+
+            if (totalAvailable < qty) {
+                alert(`Stok Tidak Cukup! Tersedia: ${totalAvailable.toFixed(2)}`);
+                return;
+            }
+
+            let remaining = qty;
+            for (let item of stockItems) {
+                if (remaining <= 0) break;
+                let availableInItem = item.qtyInitial - item.qtyOutTotal;
+                let deduct = Math.min(availableInItem, remaining);
+                item.qtyOutTotal += deduct;
+                remaining -= deduct;
+            }
+
+            db.transactions.push({
+                timestamp: new Date().toISOString(),
+                date: document.getElementById('out-date').value,
+                type: type,
+                jobRef: job,
+                article: article,
+                qty: qty,
+                unit: stockItems[0].unit,
+                note: meta || type
+            });
+
+            save();
+            showToast('Transaksi Berhasil');
+            navigate('dashboard');
+        }
+
+        function renderQCPage() {
+            const list = db.inventory.filter(i => i.status === 'PENDING_QC');
+            const cont = document.getElementById('page-qc');
+            cont.innerHTML = `
+                <div class="mb-8">
+                    <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">Antrean Inspeksi Lab</h3>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Verifikasi fisik kain sebelum masuk saldo stok</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    ${list.length === 0 ? '<div class="col-span-full py-20 text-center text-slate-300 font-bold uppercase tracking-widest text-xs">Tidak ada antrean QC</div>' : 
+                        list.map(i => `
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-amber-400">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-slate-100 text-[9px] font-black px-2 py-1 rounded text-slate-500 uppercase tracking-tighter">${i.type}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase">${i.dateIn}</span>
+                            </div>
+                            <h4 class="font-black text-slate-800 uppercase leading-tight mb-2">${i.article}</h4>
+                            <p class="text-2xl font-black text-slate-900 mb-6">${i.qtyInitial.toLocaleString()} <span class="text-xs font-normal text-slate-400 uppercase">${i.unit}</span></p>
+                            <button onclick="approveQC('${i.id}')" class="w-full bg-emerald-500 text-white font-black py-3 rounded-xl hover:bg-emerald-600 transition-all uppercase tracking-widest text-[10px]">Lulus QC</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            refreshIcons();
+        }
+
+        window.approveQC = (id) => {
+            const item = db.inventory.find(x => x.id === id);
+            if(item) {
+                item.status = 'GUDANG';
+                db.transactions.push({
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toISOString().split('T')[0],
+                    type: 'QC_PASS',
+                    jobRef: '-',
+                    article: item.article,
+                    qty: item.qtyInitial,
+                    unit: item.unit,
+                    note: 'Lulus Inspeksi'
+                });
+                save();
+                showToast('Kain masuk ke Saldo Stok');
+                renderQCPage();
+                renderDashboard();
+            }
+        };
+
+        function renderReportPage() {
+            const cont = document.getElementById('page-report');
+            const summary = {};
+            db.inventory.filter(i => i.status === 'GUDANG').forEach(i => {
+                if(!summary[i.article]) summary[i.article] = { art: i.article, type: i.type, unit: i.unit, total: 0, out: 0 };
+                summary[i.article].total += i.qtyInitial;
+                summary[i.article].out += (i.qtyOutTotal || 0);
+            });
+
+            cont.innerHTML = `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 text-slate-500 font-black uppercase tracking-widest border-b border-slate-200">
+                            <tr>
+                                <th class="px-8 py-4">Artikel Kain</th>
+                                <th class="px-8 py-4">Kategori</th>
+                                <th class="px-8 py-4 text-right">Total In</th>
+                                <th class="px-8 py-4 text-right">Total Out</th>
+                                <th class="px-8 py-4 text-right text-blue-600">Saldo Akhir</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-bold">
+                            ${Object.values(summary).map(s => `
+                                <tr>
+                                    <td class="px-8 py-4 text-slate-800 uppercase">${s.art}</td>
+                                    <td class="px-8 py-4 text-slate-400 text-[10px] uppercase">${s.type}</td>
+                                    <td class="px-8 py-4 text-right text-slate-500">${s.total.toFixed(2)}</td>
+                                    <td class="px-8 py-4 text-right text-rose-500">-${s.out.toFixed(2)}</td>
+                                    <td class="px-8 py-4 text-right text-lg font-black text-slate-900">${(s.total-s.out).toFixed(2)} <span class="text-[9px] font-bold text-slate-400 uppercase">${s.unit}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderDashboard() {
+            let prod = 0, sample = 0, qc = 0;
+            db.inventory.forEach(i => {
+                if(i.status === 'PENDING_QC') qc++;
+                else {
+                    const bal = i.qtyInitial - i.qtyOutTotal;
+                    if(i.type === 'Supplier') prod += bal; else sample += bal;
+                }
+            });
+            document.getElementById('dash-prod').textContent = prod.toLocaleString();
+            document.getElementById('dash-sample').textContent = sample.toLocaleString();
+            document.getElementById('dash-qc').textContent = qc;
+
+            const today = new Date().toISOString().split('T')[0];
+            const tCount = db.transactions.filter(t => t.date === today && !['QC_PASS'].includes(t.type)).length;
+            document.getElementById('dash-trx').textContent = tCount;
+
+            const q = document.getElementById('dash-search').value.toLowerCase();
+            
+            let filtered = db.transactions.filter(t => {
+                const matchSearch = t.article.toLowerCase().includes(q) || t.jobRef.toLowerCase().includes(q) || t.note.toLowerCase().includes(q);
+                const matchFilter = currentFilter === 'ALL' || t.type === currentFilter;
+                return matchSearch && matchFilter;
+            }).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            const hist = document.getElementById('dash-history');
+            document.getElementById('no-results').classList.toggle('hide-section', filtered.length > 0);
+            
+            hist.innerHTML = filtered.map(t => {
+                const typeStyle = {
+                    INBOUND_SUPPLIER: 'bg-emerald-50 text-emerald-600',
+                    INBOUND_SAMPLE: 'bg-indigo-50 text-indigo-600',
+                    CUTTING: 'bg-rose-50 text-rose-600',
+                    T3: 'bg-blue-50 text-blue-600',
+                    SPONGING: 'bg-teal-50 text-teal-600',
+                    MTO: 'bg-purple-50 text-purple-600',
+                    PERBAIKAN: 'bg-slate-800 text-white',
+                    QC_PASS: 'bg-slate-100 text-slate-500'
+                }[t.type] || 'bg-slate-100 text-slate-500';
+
+                const displayType = t.type.replace('_', ' ');
+
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-8 py-4 text-slate-400 font-bold">${t.timestamp.substring(11,16)}</td>
+                        <td class="px-8 py-4 text-slate-900 font-black">${t.jobRef}</td>
+                        <td class="px-8 py-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter ${typeStyle}">${displayType}</span>
+                        </td>
+                        <td class="px-8 py-4 text-right font-black ${['INBOUND_SUPPLIER','INBOUND_SAMPLE','QC_PASS'].includes(t.type) ? 'text-emerald-600' : 'text-blue-600'}">${t.qty.toFixed(2)}</td>
+                        <td class="px-8 py-4">
+                            <div class="uppercase text-slate-800 font-bold">${t.article}</div>
+                            <div class="text-[9px] text-slate-400 italic">${t.note}</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            refreshIcons();
+        }
+
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = m;
+            t.classList.remove('translate-x-[150%]');
+            setTimeout(() => t.classList.add('translate-x-[150%]'), 3000);
+        }
+
+        function refreshIcons() { if(window.lucide) lucide.createIcons(); }
+        window.resetData = () => { if(confirm("Hapus semua data?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
+
+        window.onload = () => {
+            document.getElementById('current-date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            navigate('dashboard');
+        };
+    </script>
+</body>
+</html>
